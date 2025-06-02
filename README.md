@@ -22,7 +22,7 @@ Play traditional gamelan tones mapped to numbers **1–5** using either your **k
 ## 🎵 How to Use
 
 ### Desktop:
-- Press keys **1 2 3 4 5 6 7 8 9 0** on your physical keyboard.
+- Press keys **1 2 3 4 5** on your physical keyboard.
 - Or click/tap the on-screen buttons directly.
 
 ### Mobile:
@@ -62,7 +62,7 @@ Each waveform offers a different tonal character that can mimic parts of gamelan
 
 ## 🧠 Credits
 
-- Built with ❤️ by [@alqipne](https://www.instagram.com/alqipne)
+- Built with ❤️ by [@alqipne](https://instagram.com/alqipne)
 - Inspired by traditional Balinese gamelan scale.
 
 ---
