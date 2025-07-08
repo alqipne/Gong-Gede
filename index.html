@@ -1,34 +1,480 @@
-<!-- HTML -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Gong Gede by @alqipne</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamelan Digital</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0e6d2; /* Warna dasar seperti kayu */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-  <!-- Link external CSS -->
-  <link rel="stylesheet" href="style.css" />
+        h1 {
+            color: #6a0505; /* Warna merah marun */
+            margin-bottom: 30px;
+        }
+
+        .gamelan-container {
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+            background-color: #8b4513; /* Warna coklat tua seperti bingkai gamelan */
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .gamelan-note {
+            width: 80px;
+            height: 120px;
+            background-color: #c28854; /* Warna tembaga atau perunggu */
+            border: 4px solid #5a2e00; /* Warna border lebih gelap */
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #fff; /* Warna teks putih */
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gamelan-note span {
+            z-index: 1;
+        }
+
+        .gamelan-note::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 100%);
+            z-index: 0;
+        }
+
+        .gamelan-note:active {
+            transform: scale(0.95);
+            background-color: #a06e3d; /* Sedikit lebih gelap saat ditekan */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .controls {
+            margin-top: 30px;
+            background-color: #8b4513;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .controls label {
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .controls select {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: #c28854;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            appearance: none; /* Menghilangkan panah default pada select */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 8px 10px;
+        }
+
+        .controls select option {
+            background-color: #8b4513; /* Warna background untuk opsi */
+            color: #fff;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-control input[type="range"] {
+            width: 150px;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 10px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            border-radius: 5px;
+        }
+
+        .volume-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #6a0505;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .volume-control input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #6a0505;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+    </style>
 </head>
 <body>
+    <h2>Gong Gede</h2>
+    <h3>@alqipne</h3>
 
-  <!-- Title -->
-  <h1>Gong Gede by @alqipne</h1>
+    <div class="gamelan-container" id="gamelanContainer">
+        </div>
 
-  <!-- Sound waveform selection -->
-  <div id="controls">
-    <label for="waveform">Waveform:</label>
-    <select id="waveform">
-      <option value="sine">sine</option>
-      <option value="square">square</option>
-      <option value="triangle">triangle</option>
-      <option value="sawtooth">sawtooth</option>
-    </select>
-  </div>
+    <div class="controls">
+        <label for="effectSelect">Pilih Efek Suara:</label>
+        <select id="effectSelect">
+            <option value="none">Tidak Ada</option>
+            <option value="reverb">Reverb (Gema)</option>
+            <option value="delay">Delay (Penundaan)</option>
+            <option value="wahwah">Wah-Wah</option>
+            <option value="phaser">Phaser</option>
+        </select>
+        <div class="volume-control">
+            <label for="volumeRange">Volume:</label>
+            <input type="range" id="volumeRange" min="0" max="1" step="0.05" value="0.7">
+        </div>
+    </div>
 
-  <!-- Button container for notes -->
-  <div id="buttons"></div>
+    <script>
+        const notes = [
+  { key: "1", name: "1", freq: 783.99 },
+  { key: "2", name: "2", freq: 493.88 },
+  { key: "3", name: "3", freq: 523.25 },
+  { key: "4", name: "4", freq: 587.33 },
+  { key: "5", name: "5", freq: 739.99 }
+];
 
-  <!-- Load main JavaScript -->
-  <script src="script.js"></script>
+
+        let audioContext;
+        let mainGainNode;
+        let currentEffectNode = null; // Node efek yang sedang aktif
+
+        const gamelanContainer = document.getElementById('gamelanContainer');
+        const effectSelect = document.getElementById('effectSelect');
+        const volumeRange = document.getElementById('volumeRange');
+
+        // Inisialisasi AudioContext saat ada interaksi pengguna
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                mainGainNode = audioContext.createGain();
+                mainGainNode.connect(audioContext.destination);
+                mainGainNode.gain.value = volumeRange.value; // Set volume awal
+                console.log("AudioContext diinisialisasi.");
+            }
+        }
+
+        // --- Fungsi untuk Efek Suara ---
+
+        function createReverbNode() {
+            const convolver = audioContext.createConvolver();
+            // Untuk reverb yang realistis, kita butuh impulse response (file audio khusus)
+            // Contoh sederhana: membuat impulse response sintetis
+            const buffer = audioContext.createBuffer(2, audioContext.sampleRate * 2, audioContext.sampleRate);
+            const leftChannel = buffer.getChannelData(0);
+            const rightChannel = buffer.getChannelData(1);
+            for (let i = 0; i < buffer.length; i++) {
+                leftChannel[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / buffer.length, 3);
+                rightChannel[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / buffer.length, 3);
+            }
+            convolver.buffer = buffer;
+            console.log("Reverb node dibuat.");
+            return convolver;
+        }
+
+        function createDelayNode() {
+            const delay = audioContext.createDelay(1.0); // Max delay of 1 second
+            delay.delayTime.value = 0.3; // Default delay time
+            const feedback = audioContext.createGain();
+            feedback.gain.value = 0.6; // Default feedback
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 1000; // Lowpass filter for warmer delays
+
+            delay.connect(feedback);
+            feedback.connect(filter);
+            filter.connect(delay); // Feedback loop
+            
+            // Wet/Dry mix
+            const dryGain = audioContext.createGain();
+            dryGain.gain.value = 0.7; // Original signal
+            const wetGain = audioContext.createGain();
+            wetGain.gain.value = 0.5; // Delayed signal
+
+            const inputNode = audioContext.createGain();
+            inputNode.connect(dryGain);
+            inputNode.connect(delay);
+            
+            delay.connect(wetGain);
+
+            wetGain.connect(mainGainNode); // Connect wet signal to main output
+            dryGain.connect(mainGainNode); // Connect dry signal to main output
+
+            console.log("Delay node dibuat.");
+            return {
+                input: inputNode,
+                output: mainGainNode // Output directly to mainGainNode for mixing
+            };
+        }
+        
+        function createWahWahNode() {
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.Q.value = 10; // Q-factor for resonance
+
+            const oscillator = audioContext.createOscillator();
+            oscillator.frequency.value = 5; // LFO speed in Hz (how fast the wah effect cycles)
+            oscillator.type = 'sine'; // Sine wave for smooth modulation
+
+            const gain = audioContext.createGain();
+            gain.gain.value = 1000; // Amount of modulation (how wide the wah sweeps)
+
+            oscillator.connect(gain);
+            gain.connect(filter.frequency); // Connect LFO to filter frequency
+
+            oscillator.start(0);
+
+            console.log("Wah-Wah node dibuat.");
+            return filter;
+        }
+
+        function createPhaserNode() {
+            // Phaser menggunakan beberapa allpass filter
+            const inputGain = audioContext.createGain();
+            const outputGain = audioContext.createGain();
+            outputGain.gain.value = 0.8; // Blend wet/dry
+
+            let previousNode = inputGain;
+            const stages = 4; // Number of allpass filter stages
+            const LFO = audioContext.createOscillator();
+            LFO.type = 'sine';
+            LFO.frequency.value = 1; // LFO speed
+
+            const LFO_gain = audioContext.createGain();
+            LFO_gain.gain.value = 800; // Sweep range for frequency
+
+            LFO.connect(LFO_gain);
+            LFO.start(0);
+
+            for (let i = 0; i < stages; i++) {
+                const allpass = audioContext.createBiquadFilter();
+                allpass.type = 'allpass';
+                allpass.Q.value = 1; // Q-factor for allpass filter
+
+                LFO_gain.connect(allpass.frequency); // Modulate allpass frequency
+                previousNode.connect(allpass);
+                previousNode = allpass;
+            }
+
+            inputGain.connect(outputGain); // Dry signal
+            previousNode.connect(outputGain); // Wet signal
+
+            console.log("Phaser node dibuat.");
+            return { input: inputGain, output: outputGain };
+        }
+
+
+        // Fungsi untuk mengaplikasikan efek
+        function applyEffect(effectType) {
+            if (!audioContext) return;
+
+            // Putuskan koneksi efek sebelumnya dari mainGainNode
+            if (currentEffectNode) {
+                // Khusus untuk delay yang memiliki input dan output berbeda
+                if (currentEffectNode.input && currentEffectNode.output) {
+                    currentEffectNode.input.disconnect();
+                    // Pastikan wet dan dry juga terputus dari mainGainNode jika mereka terhubung langsung
+                    // Ini mungkin perlu penanganan khusus tergantung bagaimana delay dibentuk
+                } else {
+                    currentEffectNode.disconnect();
+                }
+                console.log("Efek sebelumnya diputus.");
+            }
+
+            // Atur ulang koneksi mainGainNode ke destination
+            // Kita akan selalu menyambungkan oscillator ke mainGainNode, dan efek akan berada DI ANTARA mereka.
+            mainGainNode.disconnect();
+            mainGainNode.connect(audioContext.destination); // Default connection
+
+            switch (effectType) {
+                case 'reverb':
+                    currentEffectNode = createReverbNode();
+                    mainGainNode.disconnect(); // Putuskan mainGainNode dari destination sementara
+                    mainGainNode.connect(currentEffectNode);
+                    currentEffectNode.connect(audioContext.destination);
+                    console.log("Efek Reverb diterapkan.");
+                    break;
+                case 'delay':
+                    const delayNodes = createDelayNode();
+                    currentEffectNode = delayNodes; // Simpan objek {input, output}
+                    // Dalam kasus delay, oscillator akan terhubung ke delayNodes.input
+                    // dan delayNodes.output sudah terhubung ke mainGainNode.
+                    // mainGainNode akan menjadi tujuan akhir setelah delay.
+                    console.log("Efek Delay diterapkan.");
+                    break;
+                case 'wahwah':
+                    currentEffectNode = createWahWahNode();
+                    mainGainNode.disconnect();
+                    mainGainNode.connect(currentEffectNode);
+                    currentEffectNode.connect(audioContext.destination);
+                    console.log("Efek Wah-Wah diterapkan.");
+                    break;
+                case 'phaser':
+                    const phaserNodes = createPhaserNode();
+                    currentEffectNode = phaserNodes;
+                    // Phasing effect needs a dry signal bypass, so connect mainGainNode
+                    // to the phaser's input and then the phaser's output to the destination.
+                    // This implies the phaser itself will handle the dry/wet mix.
+                    mainGainNode.disconnect(); // Disconnect mainGainNode from direct destination
+                    mainGainNode.connect(phaserNodes.input); // Connect to phaser input
+                    phaserNodes.output.connect(audioContext.destination); // Phaser output to destination
+                    console.log("Efek Phaser diterapkan.");
+                    break;
+                case 'none':
+                default:
+                    currentEffectNode = null;
+                    // mainGainNode sudah terhubung kembali ke destination secara default di awal fungsi
+                    console.log("Tidak ada efek diterapkan.");
+                    break;
+            }
+        }
+
+        // Fungsi untuk memainkan suara gamelan
+        function playGamelanNote(frequency) {
+            initAudioContext(); // Pastikan AudioContext sudah diinisialisasi
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain(); // Gain node untuk ADSR
+            
+            oscillator.type = 'triangle'; // Suara seperti gamelan biasanya tidak murni sine
+            oscillator.frequency.value = frequency;
+
+            // ADSR Envelope (Attack, Decay, Sustain, Release)
+            const now = audioContext.currentTime;
+            const attackTime = 0.02; // Cepat
+            const decayTime = 0.1;
+            const sustainLevel = 0.5;
+            const releaseTime = 0.5; // Agak panjang
+
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(1, now + attackTime);
+            gainNode.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime);
+            gainNode.gain.linearRampToValueAtTime(0, now + attackTime + decayTime + releaseTime);
+
+            // Sambungkan oscillator ke rantai efek atau langsung ke mainGainNode
+            if (currentEffectNode) {
+                if (currentEffectNode.input && currentEffectNode.output) { // Case for Delay or Phaser
+                    oscillator.connect(gainNode);
+                    gainNode.connect(currentEffectNode.input); // Connect to effect's input
+                    // The effect's output is already handled in applyEffect to connect to mainGainNode or destination
+                } else { // Case for Reverb or WahWah (single node effect)
+                    oscillator.connect(gainNode);
+                    gainNode.connect(currentEffectNode);
+                    currentEffectNode.connect(audioContext.destination); // Ensure effect output connects to destination
+                }
+            } else {
+                oscillator.connect(gainNode);
+                gainNode.connect(mainGainNode); // Langsung ke mainGainNode jika tidak ada efek
+            }
+
+            oscillator.start(now);
+            oscillator.stop(now + attackTime + decayTime + releaseTime + 0.1); // Stop after envelope finishes
+        }
+
+        // Generate UI tombol gamelan
+        notes.forEach(note => {
+            const noteDiv = document.createElement('div');
+            noteDiv.classList.add('gamelan-note');
+            noteDiv.dataset.freq = note.freq;
+            noteDiv.dataset.key = note.key;
+            noteDiv.innerHTML = `<span>${note.name}</span>`;
+            
+            noteDiv.addEventListener('mousedown', () => playGamelanNote(note.freq));
+            noteDiv.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Mencegah scrolling pada perangkat sentuh
+                playGamelanNote(note.freq);
+            }, { passive: false }); // Gunakan { passive: false } untuk preventDefault
+
+            gamelanContainer.appendChild(noteDiv);
+        });
+
+        // Event listener untuk pilihan efek
+        effectSelect.addEventListener('change', (event) => {
+            applyEffect(event.target.value);
+        });
+
+        // Event listener untuk kontrol volume
+        volumeRange.addEventListener('input', (event) => {
+            initAudioContext(); // Pastikan AudioContext diinisialisasi sebelum mengubah volume
+            if (mainGainNode) {
+                mainGainNode.gain.value = parseFloat(event.target.value);
+            }
+        });
+
+        // Tangani input keyboard
+        document.addEventListener('keydown', (event) => {
+            const pressedKey = event.key;
+            const noteToPlay = notes.find(note => note.key === pressedKey);
+            if (noteToPlay) {
+                // Tambahkan kelas 'active' untuk visual feedback
+                const noteElement = document.querySelector(`.gamelan-note[data-key="${pressedKey}"]`);
+                if (noteElement && !noteElement.classList.contains('active')) {
+                    noteElement.classList.add('active');
+                    playGamelanNote(noteToPlay.freq);
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (event) => {
+            const pressedKey = event.key;
+            const noteElement = document.querySelector(`.gamelan-note[data-key="${pressedKey}"]`);
+            if (noteElement) {
+                noteElement.classList.remove('active');
+            }
+        });
+
+    </script>
 </body>
 </html>
